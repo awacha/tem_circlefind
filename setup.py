@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(
-    name='tem_circlefind', version='0.0.1', author='Andras Wacha',
+    name='tem_circlefind', version='0.0.2', author='Andras Wacha',
     author_email='awacha@gmail.com', url='http://github.com/awacha/tem_circlefind',
     description='GUI utility for finding circles in images (especiall transmission electronmicrography)',
     package_dir={'': 'src'},

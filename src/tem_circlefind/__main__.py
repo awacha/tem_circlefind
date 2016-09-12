@@ -1,6 +1,8 @@
 import sys
 
-from PyQt5 import QtWidgets
+from PyQt4 import QtGui
+
+QtWidgets = QtGui
 
 from .tem_circlefind import TEMCircleFind
 

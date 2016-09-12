@@ -2,9 +2,11 @@ import os
 
 import numpy as np
 import pkg_resources
-from PyQt5 import QtWidgets, QtCore, QtGui
-from PyQt5.uic import loadUiType
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
+from PyQt4 import QtCore, QtGui
+
+QtWidgets = QtGui
+from PyQt4.uic import loadUiType
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 from scipy.misc import imread
 
