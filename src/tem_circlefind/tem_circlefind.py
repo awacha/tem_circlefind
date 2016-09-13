@@ -4,6 +4,7 @@ import numpy as np
 import pkg_resources
 from PyQt4 import QtCore, QtGui
 
+
 QtWidgets = QtGui
 from PyQt4.uic import loadUiType
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg, NavigationToolbar2QT
@@ -117,7 +118,7 @@ class TEMCircleFind(QtWidgets.QWidget, TEMCircleFind_UI):
             mb.show()
 
     def browseInputFile(self):
-        filename, filter_used = QtWidgets.QFileDialog.getOpenFileName(self, 'Open image file')
+        filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open image file')
         if not filename:
             return
         else:
@@ -229,7 +230,7 @@ class TEMCircleFind(QtWidgets.QWidget, TEMCircleFind_UI):
             dirname = os.path.join(os.getcwd(), 'untitled.txt')
         else:
             dirname = os.path.splitext(self.filename)[0] + '.txt'
-        filename, filter = QtWidgets.QFileDialog.getSaveFileName(self, "Save results to file...", dirname)
+        filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save results to file...", dirname)
         if not filename:
             return
         with open(filename, 'wt', encoding='utf-8') as f:
