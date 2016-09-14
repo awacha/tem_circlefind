@@ -2,14 +2,17 @@
 
 from setuptools import setup
 
+
 setup(
-    name='tem_circlefind', version='0.0.5', author='Andras Wacha',
+    name='tem_circlefind', author='Andras Wacha',
     author_email='awacha@gmail.com', url='http://github.com/awacha/tem_circlefind',
     description='GUI utility for finding circles in images (especiall transmission electronmicrography)',
     package_dir={'': 'src'},
     packages=['tem_circlefind'],
     package_data={'': ['*.ui']},
     # cmdclass = {'build_ext': build_ext},
+    setup_requires=['setuptools_scm'],
+    use_scm_version=True,
     install_requires=['numpy>=1.0.0', 'scipy>=0.7.0', 'matplotlib'],
     entry_points={'gui_scripts': ['tem_circlefind = tem_circlefind.__main__:run']},
     keywords="TEM, electron microscopy, circles, histogram",
