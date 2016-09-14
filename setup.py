@@ -1,8 +1,22 @@
 #!/usb/bin/env python
 
+import os
+
+from PyQt4.uic import compileUi
 from setuptools import setup
 
 
+def compile_uis(packageroot):
+    for dirpath, dirnames, filenames in os.walk(packageroot):
+        for fn in [fn_ for fn_ in filenames if fn_.endswith('.ui')]:
+            fname = os.path.join(dirpath, fn)
+            pyfilename = os.path.splitext(fname)[0] + '_ui.py'
+            with open(pyfilename, 'wt', encoding='utf-8') as pyfile:
+                compileUi(fname, pyfile)
+            print('Compiled UI file: {} -> {}.'.format(fname, pyfilename))
+
+
+compile_uis('src')
 setup(
     name='tem_circlefind', author='Andras Wacha',
     author_email='awacha@gmail.com', url='http://github.com/awacha/tem_circlefind',

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TEMCircleFInd</class>
- <widget class="QWidget" name="TEMCircleFInd">
+ <class>TEMCircleFind</class>
+ <widget class="QWidget" name="TEMCircleFind">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -157,8 +157,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>400</width>
-           <height>218</height>
+           <width>370</width>
+           <height>282</height>
           </rect>
          </property>
          <property name="sizePolicy">
@@ -291,9 +291,6 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <property name="showGroupSeparator" stdset="0">
-      <bool>false</bool>
-     </property>
      <property name="decimals">
       <number>3</number>
      </property>
@@ -302,6 +299,9 @@
      </property>
      <property name="value">
       <double>1.000000000000000</double>
+     </property>
+     <property name="showGroupSeparator" stdset="0">
+      <bool>false</bool>
      </property>
     </widget>
    </item>

@@ -1,25 +1,20 @@
 import os
 
 import numpy as np
-import pkg_resources
 from PyQt4 import QtCore, QtGui
-
+from pkg_resources import get_distribution
 
 QtWidgets = QtGui
-from PyQt4.uic import loadUiType
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 from scipy.misc import imread
 
-TEMCircleFind_UI, baseclass = loadUiType(pkg_resources.resource_filename('tem_circlefind', "tem_circlefind.ui"))
-
-assert baseclass is QtWidgets.QWidget
+from .tem_circlefind_ui import Ui_TEMCircleFind
 
 
-class TEMCircleFind(QtWidgets.QWidget, TEMCircleFind_UI):
+class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
     def __init__(self):
         super().__init__(parent=None, flags=QtCore.Qt.Window)
-        super(TEMCircleFind_UI, self).__init__()
         self.setupUi(self)
         self.fig = Figure()
         self.canvas = FigureCanvasQTAgg(self.fig)
@@ -54,6 +49,7 @@ class TEMCircleFind(QtWidgets.QWidget, TEMCircleFind_UI):
         self._point_markers = []
         self._active_toolbuttons = []
         self.clicktargetoperationBox.setChecked(False)
+        self.setWindowTitle('TEM Circle Finder v{}'.format(get_distribution('tem_circlefind').version))
         self.show()
 
     def removeSelected(self):
