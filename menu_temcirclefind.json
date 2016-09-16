@@ -2,9 +2,9 @@
   "menu_name": "Anaconda${PY_VER} ${PLATFORM}",
   "menu_items": [
     {
-      "pywscript": "{PYTHON_SCRIPTS}/tem_circlefind-script.pyw"
-      "name": "TEM circle finder"
-      "icon": "{MENU_DIR}/tem_circlefind.ico"
+      "pywscript": "${PYTHON_SCRIPTS}/tem_circlefind-script.pyw",
+      "name": "TEM circle finder",
+      "icon": "${MENU_DIR}/tem_circlefind.ico",
       "desktop": true
     }
   ]
