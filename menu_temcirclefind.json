@@ -4,7 +4,7 @@
     {
       "pywscript": "{PYTHON_SCRIPTS}/tem_circlefind-script.py"
       "name": "TEM circle finder"
-      "icon": ""
+      "icon": "{MENU_DIR}/tem_circlefind.ico"
       "desktop": true
     }
   ]
