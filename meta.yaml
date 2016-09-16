@@ -1,0 +1,31 @@
+package:
+  name: tem_circlefind
+  version: {{ GIT_DESCRIBE_TAG }}
+
+source:
+  git_url: ./
+
+build:
+  number: {{ GIT_DESCRIBE_NUMBER }}
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - pyqt <=5.0.0
+    - setuptools_scm
+    - matplotlib
+    - numpy
+    - scipy
+
+  run:
+    - python
+    - numpy
+    - scipy
+    - matplotlib
+    - pyqt <=5.0.0
+
+about:
+  home: https://github.com/awacha/tem_circlefind
+  license: BSD-3
+  license_file: LICENSE
