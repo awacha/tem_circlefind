@@ -33,6 +33,6 @@ about:
 app:
   entry: tem_circlefind   [linux]
   entry: tem_circlefind   [win]
-  icon: tem_circlefind.png
   summary: Circle finding tool for transmission electron micrographs
-  type: desk
+  type: web
+  icon: tem_circlefind.png
