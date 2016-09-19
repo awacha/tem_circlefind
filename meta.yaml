@@ -29,3 +29,10 @@ about:
   home: https://github.com/awacha/tem_circlefind
   license: BSD-3
   license_file: LICENSE
+
+app:
+  entry: tem_circlefind   [linux]
+  entry: tem_circlefind   [win]
+  icon: tem_circlefind.png
+  summary: Circle finding tool for transmission electron micrographs
+  type: desk
