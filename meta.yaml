@@ -12,7 +12,7 @@ requirements:
   build:
     - python
     - setuptools
-    - pyqt <=5.0.0
+    - pyqt >=5.0.0
     - setuptools_scm
     - matplotlib
     - numpy
@@ -23,7 +23,7 @@ requirements:
     - numpy
     - scipy
     - matplotlib
-    - pyqt <=5.0.0
+    - pyqt >=5.0.0
 
 about:
   home: https://github.com/awacha/tem_circlefind
@@ -38,5 +38,5 @@ app:
   entry: tem_circlefind   [linux]
   entry: tem_circlefind   [win]
   summary: Circle finding tool for transmission electron micrographs
-  type: desktop
+  type: desk
   icon: tem_circlefind.png

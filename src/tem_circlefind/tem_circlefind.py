@@ -1,12 +1,10 @@
 import os
 
 import numpy as np
-from PyQt4 import QtCore, QtGui
-from pkg_resources import get_distribution
-
-QtWidgets = QtGui
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg, NavigationToolbar2QT
+from PyQt5 import QtCore, QtGui, QtWidgets
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
+from pkg_resources import get_distribution
 from scipy.misc import imread
 
 from .tem_circlefind_ui import Ui_TEMCircleFind

@@ -2,7 +2,7 @@
 
 import os
 
-from PyQt4.uic import compileUi
+from PyQt5.uic import compileUi
 from setuptools import setup
 
 

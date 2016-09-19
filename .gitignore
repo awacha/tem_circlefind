@@ -2,4 +2,6 @@
 /build
 /dist
 /src/tem_circlefind.egg-info
+/.eggs/
 *~
+/src/tem_circlefind/tem_circlefind_ui.py
