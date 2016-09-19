@@ -27,12 +27,16 @@ requirements:
 
 about:
   home: https://github.com/awacha/tem_circlefind
-  license: BSD-3
+  license: 3-clause BSD license
+  dev_url: https://github.com/awacha/tem_circlefind.git
+  license_family: BSD
   license_file: LICENSE
+  summary: Circle finding tool for transmission electron micrographs
+  description: A GUI utility for manually finding the position and diameter of circular objects in images
 
 app:
   entry: tem_circlefind   [linux]
   entry: tem_circlefind   [win]
   summary: Circle finding tool for transmission electron micrographs
-  type: web
+  type: desktop
   icon: tem_circlefind.png
