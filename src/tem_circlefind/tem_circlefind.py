@@ -1,14 +1,29 @@
 import os
 
 import numpy as np
-from PyQt5 import QtCore, QtGui, QtWidgets
+import qtpy
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
-from pkg_resources import get_distribution
+from pkg_resources import get_distribution, resource_filename
 from scipy.misc import imread
 
-from .tem_circlefind_ui import Ui_TEMCircleFind
+if qtpy.PYQT4:
+    from PyQt4.uic import loadUiType
+elif qtpy.PYQT5:
+    from PyQt5.uic import loadUiType
+else:
+    raise NotImplementedError('PyQt 4 or 5 is needed.')
+from qtpy import QtGui, QtCore, QtWidgets
 
+# try to load the pre-compiled UI
+try:
+    from .tem_circlefind_ui import Ui_TEMCircleFind
+
+    raise ImportError
+except ImportError:
+    print('Recompiling UI.')
+    Ui_TEMCircleFind, baseclass = loadUiType(resource_filename('tem_circlefind', 'tem_circlefind/tem_circlefind.ui'))
+    assert baseclass == QtWidgets.QWidget
 
 class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
     def __init__(self):

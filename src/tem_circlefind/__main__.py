@@ -1,11 +1,10 @@
 import sys
 
-from PyQt5 import QtWidgets
+from qtpy.QtWidgets import QApplication
 
 from .tem_circlefind import TEMCircleFind
 
-
 def run():
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     win = TEMCircleFind()
     sys.exit(app.exec_())
