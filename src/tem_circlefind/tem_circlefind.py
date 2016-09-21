@@ -2,15 +2,16 @@ import os
 
 import numpy as np
 import qtpy
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 from pkg_resources import get_distribution, resource_filename
 from scipy.misc import imread
 
 if qtpy.PYQT4:
     from PyQt4.uic import loadUiType
+    from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg, NavigationToolbar2QT
 elif qtpy.PYQT5:
     from PyQt5.uic import loadUiType
+    from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 else:
     raise NotImplementedError('PyQt 4 or 5 is needed.')
 from qtpy import QtGui, QtCore, QtWidgets
