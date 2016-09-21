@@ -10,9 +10,9 @@ build:
 
 requirements:
   build:
-    - python
+    - python >=3
     - setuptools
-    - pyqt >=4.0.0
+    - pyqt >=4
     - qtpy
     - setuptools_scm
     - matplotlib
@@ -20,11 +20,11 @@ requirements:
     - scipy
 
   run:
-    - python
+    - python >=3
     - numpy
     - scipy
     - matplotlib
-    - pyqt >=4.0.0
+    - pyqt >=4
     - qtpy
 
 about:

@@ -21,8 +21,7 @@ try:
 
     raise ImportError
 except ImportError:
-    print('Recompiling UI.')
-    Ui_TEMCircleFind, baseclass = loadUiType(resource_filename('tem_circlefind', 'tem_circlefind/tem_circlefind.ui'))
+    Ui_TEMCircleFind, baseclass = loadUiType(resource_filename('tem_circlefind', 'tem_circlefind.ui'))
     assert baseclass == QtWidgets.QWidget
 
 class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
