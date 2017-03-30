@@ -2,14 +2,7 @@
 
 import os
 
-import qtpy
-
-if qtpy.PYQT4:
-    from PyQt4.uic import compileUi
-elif qtpy.PYQT5:
-    from PyQt5.uic import compileUi
-elif qtpy.PYSIDE:
-    raise NotImplementedError('PySide not yet supported')
+from PyQt5.uic import compileUi
 
 from setuptools import setup
 
@@ -34,7 +27,7 @@ setup(
     # cmdclass = {'build_ext': build_ext},
     setup_requires=['setuptools_scm'],
     use_scm_version=True,
-    install_requires=['numpy>=1.0.0', 'scipy>=0.7.0', 'matplotlib', 'qtpy'],
+    install_requires=['numpy>=1.0.0', 'scipy>=0.7.0', 'matplotlib'],
     entry_points={'gui_scripts': ['tem_circlefind = tem_circlefind.__main__:run']},
     keywords="TEM, electron microscopy, circles, histogram",
     license="BSD 3-clause",

@@ -12,20 +12,20 @@ requirements:
   build:
     - python
     - setuptools
-    - pyqt >=4
-    - qtpy
+    - pyqt >=5
     - setuptools_scm
     - matplotlib
     - numpy
     - scipy
+    - pillow
 
   run:
     - python
     - numpy
     - scipy
     - matplotlib
-    - pyqt >=4
-    - qtpy
+    - pyqt >=5
+    - pillow
 
 about:
   home: https://github.com/awacha/tem_circlefind
