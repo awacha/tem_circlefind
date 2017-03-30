@@ -232,7 +232,7 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
             dirname = os.path.join(os.getcwd(), 'untitled.txt')
         else:
             dirname = os.path.splitext(self.filename)[0] + '.txt'
-        filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save results to file...", dirname)
+        filename, filter = QtWidgets.QFileDialog.getSaveFileName(self, "Save results to file...", dirname)
         if not filename:
             return
         with open(filename, 'wt', encoding='utf-8') as f:
