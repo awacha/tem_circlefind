@@ -1,6 +1,6 @@
 import sys
 
-from qtpy.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication
 
 from .tem_circlefind import TEMCircleFind
 

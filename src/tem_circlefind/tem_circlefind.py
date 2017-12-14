@@ -240,9 +240,5 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
                 twi = self.resultsTreeWidget.topLevelItem(i)
                 assert isinstance(twi, QtWidgets.QTreeWidgetItem)
                 f.write(twi.text(0) + '\t' + twi.text(1) + '\t' + twi.text(2) + '\n')
-        mb = QtWidgets.QMessageBox(self)
-        mb.setIcon(QtWidgets.QMessageBox.Information)
-        mb.setText('Results have been saved to {}'.format(filename))
-        mb.setWindowTitle('File saved.')
-        mb.setWindowModality(True)
-        mb.show()
+        QtWidgets.QMessageBox.information(self, 'File saved.', 'Results have been saved to {}'.format(filename))
+
