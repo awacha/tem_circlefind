@@ -9,6 +9,9 @@ from PyQt5.uic import loadUiType
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from PyQt5 import QtGui, QtCore, QtWidgets
 
+from .resultsmodel import ResultsModel
+from .pendingclicksmodel import PendingClicksModel
+
 # try to load the pre-compiled UI
 try:
     from .tem_circlefind_ui import Ui_TEMCircleFind
@@ -20,12 +23,13 @@ except ImportError:
 
 class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
     def __init__(self):
-        super().__init__(parent=None, flags=QtCore.Qt.Window)
+        super().__init__()
         self.setupUi(self)
         self.fig = Figure()
         self.canvas = FigureCanvasQTAgg(self.fig)
         self.toolbar = NavigationToolbar2QT(self.canvas, self)
         self.axes = self.fig.add_subplot(1, 1, 1)
+        self.axes_horizsection = self.fig.add_subplot()
         self.fig.tight_layout()
         self.canvas.draw()
         self.canvas.mpl_connect('button_press_event', self.canvasButtonPress)
@@ -51,23 +55,24 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         assert isinstance(self.clicktargetoperationBox, QtWidgets.QGroupBox)
         self.clicktargetoperationBox.toggled.connect(self.collectclicksToggled)
         self.removeselectedPushButton.clicked.connect(self.removeSelected)
+        self.replotPushButton.clicked.connect(self.replotImage)
         self.filename = None
         self._point_markers = []
         self._active_toolbuttons = []
+        self.resultsModel = ResultsModel()
+        self.resultsTreeView.setModel(self.resultsModel)
+        self.pendingClicksModel = PendingClicksModel()
+        self.clicksTreeView.setModel(self.pendingClicksModel)
         self.clicktargetoperationBox.setChecked(False)
         self.setWindowTitle('TEM Circle Finder v{}'.format(get_distribution('tem_circlefind').version))
         self.show()
 
     def removeSelected(self):
-        assert isinstance(self.resultsTreeWidget, QtWidgets.QTreeWidget)
-        model = self.resultsTreeWidget.model()
-        assert isinstance(model, QtCore.QAbstractItemModel)
-        lis = self.resultsTreeWidget.selectedIndexes()
+        lis = self.resultsTreeView.selectedIndexes()
         while lis:
             it = lis[0]
-            assert isinstance(it, QtCore.QModelIndex)
-            model.removeRow(it.row())
-            lis = self.resultsTreeWidget.selectedIndexes()
+            self.resultsModel.removeRow(it.row())
+            lis = self.resultsTreeView.selectedIndexes()
 
     def collectclicksToggled(self, newstate: bool):
         if newstate:
@@ -94,8 +99,7 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         self.forgetPendingClicks()
 
     def forgetPendingClicks(self):
-        while self.clicksTreeView.topLevelItemCount():
-            self.clicksTreeView.takeTopLevelItem(0)
+        self.pendingClicksModel.clear()
         for pm in self._point_markers:
             pm.remove()
         self._point_markers = []
@@ -105,8 +109,10 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         e.accept()
         QtCore.QCoreApplication.instance().quit()
 
-    def loadImage(self):
+    def loadImage(self, filename=None):
         assert isinstance(self.inputLineEdit, QtWidgets.QLineEdit)
+        if filename is not None:
+            self.inputLineEdit.setText(filename)
         self.filename = self.inputLineEdit.text()
         try:
             self.data = imread(self.filename, flatten=True)
@@ -136,51 +142,55 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
 
     def canvasButtonPress(self, event):
         if not self.clicktargetoperationBox.isChecked():
+            print('Not collecting this click')
             return
         if event.inaxes != self.axes:
+            print('Not in this axes')
             return
         if event.button != 1:
+            print('Not left button')
             return
         x = event.xdata * float(self.pixelsizeSpinBox.value())
         y = event.ydata * float(self.pixelsizeSpinBox.value())
-        assert isinstance(self.clicksTreeView, QtWidgets.QTreeWidget)
-        twi = QtWidgets.QTreeWidgetItem(self.clicksTreeView)
-        twi.setText(0, str(x))
-        twi.setText(1, str(y))
-        self.clicksTreeView.addTopLevelItem(twi)
-        self.clicksTreeView.setCurrentItem(twi)
+        self.pendingClicksModel.append(x,y)
         self._point_markers.extend(self.axes.plot(event.xdata, event.ydata, 'ro', scalex=False, scaley=False))
         self.canvas.draw()
         self.processWaitingClicks()
 
     def processWaitingClicks(self):
-        assert isinstance(self.clicksTreeView, QtWidgets.QTreeWidget)
-        points = [(float(twi.text(0)), float(twi.text(1))) for twi in
-                  [self.clicksTreeView.topLevelItem(i) for i in range(self.clicksTreeView.topLevelItemCount())]]
         radius = xcen = ycen = None
-        if self.calibrationRadioButton.isChecked() and (len(points) >= 2):
+        if self.calibrationRadioButton.isChecked():
+            try:
+                points = self.pendingClicksModel.pop(2)
+            except ValueError:
+                return
             pixsize = float(self.calibrationSpinBox.value()) / (
                                                                    (points[0][0] - points[1][0]) ** 2 + (
                                                                        points[0][1] - points[1][1]) ** 2) ** 0.5
             assert isinstance(self.pixelsizeSpinBox, QtWidgets.QDoubleSpinBox)
             self.pixelsizeSpinBox.setValue(pixsize)
-            self.clicksTreeView.takeTopLevelItem(0)
-            self.clicksTreeView.takeTopLevelItem(0)
-            self._point_markers.pop(0).remove()
-            self._point_markers.pop(0).remove()
-            self.canvas.draw()
-        elif self.circlediameterRadioButton.isChecked() and (len(points) >= 2):
-            xcen = 0.5 * (points[0][0] + points[1][0])
-            ycen = 0.5 * (points[0][1] + points[1][1])
-            radius = 0.5 * ((points[0][0] - points[1][0]) ** 2 + (points[0][1] - points[1][1]) ** 2) ** 0.5
-            self.clicksTreeView.takeTopLevelItem(0)
-            self.clicksTreeView.takeTopLevelItem(0)
             self._point_markers.pop(0).remove()
             self._point_markers.pop(0).remove()
             self._point_markers = self._point_markers[2:]
             self.canvas.draw()
-        elif self.threepointsRadioButton.isChecked() and (len(points) >= 3):
+        elif self.circlediameterRadioButton.isChecked():
+            try:
+                points = self.pendingClicksModel.pop(2)
+            except ValueError:
+                return
+            xcen = 0.5 * (points[0][0] + points[1][0])
+            ycen = 0.5 * (points[0][1] + points[1][1])
+            radius = 0.5 * ((points[0][0] - points[1][0]) ** 2 + (points[0][1] - points[1][1]) ** 2) ** 0.5
+            self._point_markers.pop(0).remove()
+            self._point_markers.pop(0).remove()
+            self._point_markers = self._point_markers[2:]
+            self.canvas.draw()
+        elif self.threepointsRadioButton.isChecked():
             # the center of the circumscribed circle.
+            try:
+                points = self.pendingClicksModel.pop(3)
+            except ValueError:
+                return
             ax = points[0][0]
             ay = points[0][1]
             bx = points[1][0]
@@ -197,24 +207,17 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
             c = ((by - ay) ** 2 + (bx - ax) ** 2) ** 0.5
             s = (a + b + c) * 0.5
             radius = 0.25 * a * b * c / (s * (s - a) * (s - b) * (s - c)) ** 0.5
-            self.clicksTreeView.takeTopLevelItem(0)
-            self.clicksTreeView.takeTopLevelItem(0)
-            self.clicksTreeView.takeTopLevelItem(0)
             self._point_markers.pop(0).remove()
             self._point_markers.pop(0).remove()
             self._point_markers.pop(0).remove()
+            self._point_markers=self._point_markers[3:]
             self.canvas.draw()
         else:
             # do nothing
             pass
         if radius is not None:
             assert (xcen is not None) and (ycen is not None)
-            twi = QtWidgets.QTreeWidgetItem(self.resultsTreeWidget)
-            twi.setText(0, str(xcen))
-            twi.setText(1, str(ycen))
-            twi.setText(2, str(2 * radius))
-            self.resultsTreeWidget.addTopLevelItem(twi)
-            self.resultsTreeWidget.setCurrentItem(twi)
+            self.resultsModel.append(xcen, ycen, 2*radius)
             self.drawcircle(xcen, ycen, radius)
 
     def drawcircle(self, xcen, ycen, radius):
@@ -224,8 +227,7 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         self.canvas.draw()
 
     def clearResults(self):
-        while self.resultsTreeWidget.topLevelItemCount():
-            self.resultsTreeWidget.takeTopLevelItem(0)
+        self.resultsModel.clear()
 
     def saveResults(self):
         if self.filename is None:
@@ -236,9 +238,8 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         if not filename:
             return
         with open(filename, 'wt', encoding='utf-8') as f:
-            for i in range(self.resultsTreeWidget.topLevelItemCount()):
-                twi = self.resultsTreeWidget.topLevelItem(i)
-                assert isinstance(twi, QtWidgets.QTreeWidgetItem)
-                f.write(twi.text(0) + '\t' + twi.text(1) + '\t' + twi.text(2) + '\n')
+            data = self.resultsModel.getData()
+            for x,y,diameter in data:
+                f.write('{:12.6f}\t{:12.6f}\t{:12.6f}\n'.format(x,y,diameter))
         QtWidgets.QMessageBox.information(self, 'File saved.', 'Results have been saved to {}'.format(filename))
 
