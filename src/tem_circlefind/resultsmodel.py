@@ -1,4 +1,5 @@
 from PyQt5 import QtCore
+import numpy as np
 
 class ResultsModel(QtCore.QAbstractItemModel):
     def __init__(self, parent=None):
@@ -50,3 +51,18 @@ class ResultsModel(QtCore.QAbstractItemModel):
 
     def getData(self):
         return self._data[:]
+
+    def getMeanDiameter(self) -> float:
+        return np.mean([d[2] for d in self._data])
+
+    def getStdDiameter(self) -> float:
+        return np.std([d[2] for d in self._data])
+
+    def getMinDiameter(self) -> float:
+        return np.min([d[2] for d in self._data])
+
+    def getMaxDiameter(self) -> float:
+        return np.max([d[2] for d in self._data])
+
+    def getPtPDiameter(self) -> float:
+        return np.ptp([d[2] for d in self._data])
