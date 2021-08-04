@@ -94,11 +94,11 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         self.canvashistogram.draw()
 
     def removeSelected(self):
-        lis = self.resultsTreeView.selectedIndexes()
-        while lis:
-            it = lis[0]
-            self.resultsModel.removeRow(it.row())
-            lis = self.resultsTreeView.selectedIndexes()
+        lis = self.resultsTreeView.selectionModel().selectedRows()
+        rows = reversed(sorted({it.row() for it in lis}))
+        for row in rows:
+            self.resultsModel.removeRow(row)
+        self.drawHistogram()
 
     def collectclicksToggled(self, newstate: bool):
         if newstate:
@@ -162,12 +162,13 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
             self.inputLineEdit.setText(filename)
         self.filename = self.inputLineEdit.text()
         try:
-            self.data = imread(self.filename, flatten=True)
+            self.data = imread(self.filename)
+            print(self.data.shape)
             self.replotImage()
-        except:
+        except Exception as exc:
             mb = QtWidgets.QMessageBox(self)
             mb.setIcon(QtWidgets.QMessageBox.Critical)
-            mb.setText('Error while loading image file.')
+            mb.setText(f'Error while loading image file: {exc}')
             mb.setWindowTitle('Error')
             mb.setWindowModality(True)
             mb.show()
@@ -319,6 +320,7 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
 
     def clearResults(self):
         self.resultsModel.clear()
+        self.drawHistogram()
 
     def saveResults(self):
         if self.filename is None:
@@ -328,17 +330,26 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         filename, filter = QtWidgets.QFileDialog.getSaveFileName(self, "Save results to file...", dirname)
         if not filename:
             return
-        with open(filename, 'wt', encoding='utf-8') as f:
-            f.write(
-                '# Mean diameter: {:.3f}\n# STD diameter: {:.3f}\n# Min diameter: {:.3f}\n# Max diameter: {:.3f}\n# P-P diameter: {:.3f}\n'.format(
-                    self.resultsModel.getMeanDiameter(),
-                    self.resultsModel.getStdDiameter(),
-                    self.resultsModel.getMinDiameter(),
-                    self.resultsModel.getMaxDiameter(),
-                    self.resultsModel.getPtPDiameter()
-                ))
-            f.write('# Pixel size: {:.5f}\n'.format(self.pixelsizeSpinBox.value()))
-            data = self.resultsModel.getData()
-            for x, y, diameter in data:
-                f.write('{:12.6f}\t{:12.6f}\t{:12.6f}\n'.format(x, y, diameter))
-        QtWidgets.QMessageBox.information(self, 'File saved.', 'Results have been saved to {}'.format(filename))
+        try:
+            with open(filename, 'wt', encoding='utf-8') as f:
+                f.write(
+                    '# Mean diameter: {:.3f}\n# STD diameter: {:.3f}\n# Min diameter: {:.3f}\n# Max diameter: {:.3f}\n# P-P diameter: {:.3f}\n'.format(
+                        self.resultsModel.getMeanDiameter(),
+                        self.resultsModel.getStdDiameter(),
+                        self.resultsModel.getMinDiameter(),
+                        self.resultsModel.getMaxDiameter(),
+                        self.resultsModel.getPtPDiameter()
+                    ))
+                f.write('# Pixel size: {:.5f}\n'.format(self.pixelsizeSpinBox.value()))
+                data = self.resultsModel.getData()
+                for x, y, diameter in data:
+                    f.write('{:12.6f}\t{:12.6f}\t{:12.6f}\n'.format(x, y, diameter))
+        except Exception as exc:
+            mb = QtWidgets.QMessageBox(self)
+            mb.setIcon(QtWidgets.QMessageBox.Critical)
+            mb.setText(f'Error while saving results to file {filename}: {exc}')
+            mb.setWindowTitle('Error')
+            mb.setWindowModality(True)
+            mb.show()
+        else:
+            QtWidgets.QMessageBox.information(self, 'File saved.', 'Results have been saved to {}'.format(filename))
