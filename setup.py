@@ -3,8 +3,8 @@
 import os
 
 from PyQt5.uic import compileUi
-
 from setuptools import setup
+
 
 def compile_uis(packageroot):
     for dirpath, dirnames, filenames in os.walk(packageroot):
@@ -27,7 +27,7 @@ setup(
     # cmdclass = {'build_ext': build_ext},
     setup_requires=['setuptools_scm'],
     use_scm_version=True,
-    install_requires=['numpy>=1.0.0', 'scipy>=0.7.0', 'matplotlib'],
+    install_requires=['numpy>=1.0.0', 'scipy>=0.7.0', 'matplotlib', 'imageio'],
     entry_points={'gui_scripts': ['tem_circlefind = tem_circlefind.__main__:run']},
     keywords="TEM, electron microscopy, circles, histogram",
     license="BSD 3-clause",

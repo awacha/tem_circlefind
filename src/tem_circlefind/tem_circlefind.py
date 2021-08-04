@@ -1,18 +1,16 @@
 import os
 
 import numpy as np
+from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5.uic import loadUiType
+from imageio import imread
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 from matplotlib.widgets import MultiCursor
 from pkg_resources import get_distribution, resource_filename
-from scipy.misc import imread
 
-from PyQt5.uic import loadUiType
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
-from matplotlib.gridspec import GridSpec
-from PyQt5 import QtGui, QtCore, QtWidgets
-
-from .resultsmodel import ResultsModel
 from .pendingclicksmodel import PendingClicksModel
+from .resultsmodel import ResultsModel
 
 # try to load the pre-compiled UI
 try:
@@ -23,6 +21,7 @@ except ImportError:
     Ui_TEMCircleFind, baseclass = loadUiType(resource_filename('tem_circlefind', 'tem_circlefind.ui'))
     assert baseclass == QtWidgets.QWidget
 
+
 class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
     def __init__(self):
         super().__init__()
@@ -30,18 +29,18 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         self.fig = Figure()
         self.canvas = FigureCanvasQTAgg(self.fig)
         self.toolbar = NavigationToolbar2QT(self.canvas, self)
-#        GX=1
-#        GY=1
-#        gs=GridSpec(GY,GX)
-        self.axes = self.fig.add_subplot(1,1,1)
+        #        GX=1
+        #        GY=1
+        #        gs=GridSpec(GY,GX)
+        self.axes = self.fig.add_subplot(1, 1, 1)
         self.axes.set_frame_on(False)
         self.axes.xaxis.set_visible(False)
         self.axes.yaxis.set_visible(False)
-#        self.xsliceaxes = self.fig.add_subplot(gs[GY-1,1:], sharex=self.axes)
-#        self.xsliceaxes.yaxis.set_visible(False)
-#        self.ysliceaxes = self.fig.add_subplot(gs[:GY-1,0], sharey=self.axes)
-#        self.ysliceaxes.xaxis.set_visible(False)
-#        self.axes_horizsection = self.fig.add_subplot()
+        #        self.xsliceaxes = self.fig.add_subplot(gs[GY-1,1:], sharex=self.axes)
+        #        self.xsliceaxes.yaxis.set_visible(False)
+        #        self.ysliceaxes = self.fig.add_subplot(gs[:GY-1,0], sharey=self.axes)
+        #        self.ysliceaxes.xaxis.set_visible(False)
+        #        self.axes_horizsection = self.fig.add_subplot()
         self.fig.tight_layout()
         self.canvas.draw()
         self.canvas.mpl_connect('button_press_event', self.canvasButtonPress)
@@ -51,7 +50,7 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         self.fighistogram = Figure()
         self.canvashistogram = FigureCanvasQTAgg(self.fighistogram)
         self.toolbarhistogram = NavigationToolbar2QT(self.canvashistogram, self)
-        self.axeshistogram = self.fighistogram.add_subplot(1,1,1)
+        self.axeshistogram = self.fighistogram.add_subplot(1, 1, 1)
         self.axeshistogram.set_xlabel('Diameter (nm)')
         self.fighistogram.tight_layout()
         self.histogramVerticalLayout.addWidget(self.canvashistogram)
@@ -94,7 +93,6 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         self.axeshistogram.hist([d[2] for d in self.resultsModel.getData()], self.nHistogramBinsSpinBox.value())
         self.canvashistogram.draw()
 
-
     def removeSelected(self):
         lis = self.resultsTreeView.selectedIndexes()
         while lis:
@@ -108,20 +106,21 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
             self._active_toolbuttons = [
                 c for c in self.toolbar.children()
                 if (
-                    isinstance(c, QtWidgets.QToolButton) and
-                    c.isCheckable() and c.isChecked()
+                        isinstance(c, QtWidgets.QToolButton) and
+                        c.isCheckable() and c.isChecked()
                 )]
             for c in self._active_toolbuttons:
                 c.click()
             self.toolbar.setEnabled(False)
             try:
                 self.mpl_cursor.clear(None)
-                self.mpl_cursor.visible=False
+                self.mpl_cursor.visible = False
                 self.mpl_cursor.set_active(False)
                 del self.mpl_cursor
             except AttributeError:
                 pass
-            self.mpl_cursor = MultiCursor(self.canvas, axes=[self.axes], horizOn=True, vertOn=True, useblit=True, color='r')
+            self.mpl_cursor = MultiCursor(self.canvas, axes=[self.axes], horizOn=True, vertOn=True, useblit=True,
+                                          color='r')
             self.mpl_cursor.clear(None)
         else:
             for c in self._active_toolbuttons:
@@ -129,7 +128,7 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
             self._active_toolbuttons = []
             self.toolbar.setEnabled(True)
             try:
-                self.mpl_cursor.visible=False
+                self.mpl_cursor.visible = False
                 self.mpl_cursor.clear(None)
                 self.mpl_cursor.set_active(True)
                 del self.mpl_cursor
@@ -193,11 +192,12 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
             except:
                 QtWidgets.QMessageBox.critical(self, 'Error loading file', 'Malformed file: {}'.format(filename))
                 return
-        if data.shape[1] !=3:
-            QtWidgets.QMessageBox.critical(self, 'Error loading file', 'File {} does not have three columns.'.format(filename))
+        if data.shape[1] != 3:
+            QtWidgets.QMessageBox.critical(self, 'Error loading file',
+                                           'File {} does not have three columns.'.format(filename))
             return
         for i in range(data.shape[0]):
-            self.resultsModel.append(data[i,0], data[i, 1], data[i,2])
+            self.resultsModel.append(data[i, 0], data[i, 1], data[i, 2])
         self.replotImage()
         self.drawHistogram()
         self.updateStatistics()
@@ -206,7 +206,7 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         self.axes.clear()
         self.axes.imshow(self.data, cmap='gray', interpolation='nearest')
         for x, y, diameter in self.resultsModel.getData():
-            self.drawcircle(x, y, diameter*0.5, silent=True)
+            self.drawcircle(x, y, diameter * 0.5, silent=True)
         self.canvas.draw()
 
     def canvasButtonPress(self, event):
@@ -221,7 +221,7 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
             return
         x = event.xdata
         y = event.ydata
-        self.pendingClicksModel.append(x,y)
+        self.pendingClicksModel.append(x, y)
         self._point_markers.extend(self.axes.plot(event.xdata, event.ydata, 'ro', scalex=False, scaley=False))
         self.canvas.draw()
         self.processWaitingClicks()
@@ -234,8 +234,8 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
             except ValueError:
                 return
             pixsize = float(self.calibrationSpinBox.value()) / (
-                                                                   (points[0][0] - points[1][0]) ** 2 + (
-                                                                       points[0][1] - points[1][1]) ** 2) ** 0.5
+                    (points[0][0] - points[1][0]) ** 2 + (
+                    points[0][1] - points[1][1]) ** 2) ** 0.5
             assert isinstance(self.pixelsizeSpinBox, QtWidgets.QDoubleSpinBox)
             self.pixelsizeSpinBox.setValue(pixsize)
             for i in range(2):
@@ -250,9 +250,10 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
                 points = self.pendingClicksModel.pop(2)
             except ValueError:
                 return
-            xcen = 0.5 * (points[0][0] + points[1][0])*self.pixelsizeSpinBox.value()
-            ycen = 0.5 * (points[0][1] + points[1][1])*self.pixelsizeSpinBox.value()
-            radius = self.pixelsizeSpinBox.value()*0.5 * ((points[0][0] - points[1][0]) ** 2 + (points[0][1] - points[1][1]) ** 2) ** 0.5
+            xcen = 0.5 * (points[0][0] + points[1][0]) * self.pixelsizeSpinBox.value()
+            ycen = 0.5 * (points[0][1] + points[1][1]) * self.pixelsizeSpinBox.value()
+            radius = self.pixelsizeSpinBox.value() * 0.5 * (
+                        (points[0][0] - points[1][0]) ** 2 + (points[0][1] - points[1][1]) ** 2) ** 0.5
             for i in range(2):
                 try:
                     self._point_markers.pop(0).remove()
@@ -274,9 +275,9 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
             cy = points[2][1]
             d = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by))
             xcen = ((ay ** 2 + ax ** 2) * (by - cy) + (by ** 2 + bx ** 2) * (cy - ay) + (cy ** 2 + cx ** 2) * (
-                ay - by)) / d
+                    ay - by)) / d
             ycen = ((ay ** 2 + ax ** 2) * (cx - bx) + (by ** 2 + bx ** 2) * (ax - cx) + (cy ** 2 + cx ** 2) * (
-                bx - ax)) / d
+                    bx - ax)) / d
             a = ((by - cy) ** 2 + (bx - cx) ** 2) ** 0.5
             b = ((cy - ay) ** 2 + (cx - ax) ** 2) ** 0.5
             c = ((by - ay) ** 2 + (bx - ax) ** 2) ** 0.5
@@ -290,14 +291,14 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
                     self._point_markers.pop(0).remove()
                 except ValueError:
                     continue
-            self._point_markers=self._point_markers[3:]
+            self._point_markers = self._point_markers[3:]
             self.canvas.draw()
         else:
             # do nothing
             pass
         if radius is not None:
             assert (xcen is not None) and (ycen is not None)
-            self.resultsModel.append(xcen, ycen, 2*radius)
+            self.resultsModel.append(xcen, ycen, 2 * radius)
             self.drawcircle(xcen, ycen, radius)
             self.drawHistogram()
             self.updateStatistics()
@@ -328,16 +329,16 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         if not filename:
             return
         with open(filename, 'wt', encoding='utf-8') as f:
-            f.write('# Mean diameter: {:.3f}\n# STD diameter: {:.3f}\n# Min diameter: {:.3f}\n# Max diameter: {:.3f}\n# P-P diameter: {:.3f}\n'.format(
-                self.resultsModel.getMeanDiameter(),
-                self.resultsModel.getStdDiameter(),
-                self.resultsModel.getMinDiameter(),
-                self.resultsModel.getMaxDiameter(),
-                self.resultsModel.getPtPDiameter()
-            ))
+            f.write(
+                '# Mean diameter: {:.3f}\n# STD diameter: {:.3f}\n# Min diameter: {:.3f}\n# Max diameter: {:.3f}\n# P-P diameter: {:.3f}\n'.format(
+                    self.resultsModel.getMeanDiameter(),
+                    self.resultsModel.getStdDiameter(),
+                    self.resultsModel.getMinDiameter(),
+                    self.resultsModel.getMaxDiameter(),
+                    self.resultsModel.getPtPDiameter()
+                ))
             f.write('# Pixel size: {:.5f}\n'.format(self.pixelsizeSpinBox.value()))
             data = self.resultsModel.getData()
-            for x,y,diameter in data:
-                f.write('{:12.6f}\t{:12.6f}\t{:12.6f}\n'.format(x,y,diameter))
+            for x, y, diameter in data:
+                f.write('{:12.6f}\t{:12.6f}\t{:12.6f}\n'.format(x, y, diameter))
         QtWidgets.QMessageBox.information(self, 'File saved.', 'Results have been saved to {}'.format(filename))
-
