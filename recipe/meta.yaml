@@ -1,12 +1,12 @@
 package:
   name: tem_circlefind
-  version: { { GIT_DESCRIBE_TAG } }
+  version: {{ GIT_DESCRIBE_TAG }}
 
 source:
   git_url: ../
 
 build:
-  number: { { GIT_DESCRIBE_NUMBER } }
+  number: {{ GIT_DESCRIBE_NUMBER }}
 
 requirements:
   build:
