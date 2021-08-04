@@ -18,6 +18,7 @@ requirements:
     - numpy
     - scipy
     - pillow
+    - imageio
 
   run:
     - python
@@ -26,6 +27,7 @@ requirements:
     - matplotlib
     - pyqt >=5
     - pillow
+    - imageio
 
 about:
   home: https://github.com/awacha/tem_circlefind
@@ -37,8 +39,8 @@ about:
   description: A GUI utility for manually finding the position and diameter of circular objects in images
 
 app:
-  entry: tem_circlefind   [linux]
-  entry: tem_circlefind   [win]
+  entry: tem_circlefind  # [linux]
+  entry: tem_circlefind  # [win]
   summary: Circle finding tool for transmission electron micrographs
   type: desk
   icon: tem_circlefind.png

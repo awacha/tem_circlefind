@@ -1,13 +1,12 @@
 import os
 
 import numpy as np
+from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5.uic import loadUiType
+from imageio import imread
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 from pkg_resources import get_distribution, resource_filename
-from scipy.misc import imread
-
-from PyQt5.uic import loadUiType
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
-from PyQt5 import QtGui, QtCore, QtWidgets
 
 # try to load the pre-compiled UI
 try:
@@ -17,6 +16,7 @@ try:
 except ImportError:
     Ui_TEMCircleFind, baseclass = loadUiType(resource_filename('tem_circlefind', 'tem_circlefind.ui'))
     assert baseclass == QtWidgets.QWidget
+
 
 class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
     def __init__(self):
@@ -75,8 +75,8 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
             self._active_toolbuttons = [
                 c for c in self.toolbar.children()
                 if (
-                    isinstance(c, QtWidgets.QToolButton) and
-                    c.isCheckable() and c.isChecked()
+                        isinstance(c, QtWidgets.QToolButton) and
+                        c.isCheckable() and c.isChecked()
                 )]
             for c in self._active_toolbuttons:
                 c.click()
@@ -109,7 +109,7 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         assert isinstance(self.inputLineEdit, QtWidgets.QLineEdit)
         self.filename = self.inputLineEdit.text()
         try:
-            self.data = imread(self.filename, flatten=True)
+            self.data = imread(self.filename)
             self.replotImage()
         except:
             mb = QtWidgets.QMessageBox(self)
@@ -160,8 +160,8 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
         radius = xcen = ycen = None
         if self.calibrationRadioButton.isChecked() and (len(points) >= 2):
             pixsize = float(self.calibrationSpinBox.value()) / (
-                                                                   (points[0][0] - points[1][0]) ** 2 + (
-                                                                       points[0][1] - points[1][1]) ** 2) ** 0.5
+                    (points[0][0] - points[1][0]) ** 2 + (
+                    points[0][1] - points[1][1]) ** 2) ** 0.5
             assert isinstance(self.pixelsizeSpinBox, QtWidgets.QDoubleSpinBox)
             self.pixelsizeSpinBox.setValue(pixsize)
             self.clicksTreeView.takeTopLevelItem(0)
@@ -189,9 +189,9 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
             cy = points[2][1]
             d = 2 * (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by))
             xcen = ((ay ** 2 + ax ** 2) * (by - cy) + (by ** 2 + bx ** 2) * (cy - ay) + (cy ** 2 + cx ** 2) * (
-                ay - by)) / d
+                    ay - by)) / d
             ycen = ((ay ** 2 + ax ** 2) * (cx - bx) + (by ** 2 + bx ** 2) * (ax - cx) + (cy ** 2 + cx ** 2) * (
-                bx - ax)) / d
+                    bx - ax)) / d
             a = ((by - cy) ** 2 + (bx - cx) ** 2) ** 0.5
             b = ((cy - ay) ** 2 + (cx - ax) ** 2) ** 0.5
             c = ((by - ay) ** 2 + (bx - ax) ** 2) ** 0.5
