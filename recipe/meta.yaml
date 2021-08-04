@@ -1,12 +1,12 @@
 package:
   name: tem_circlefind
-  version: {{ GIT_DESCRIBE_TAG }}
+  version: { { GIT_DESCRIBE_TAG } }
 
 source:
   git_url: ../
 
 build:
-  number: {{ GIT_DESCRIBE_NUMBER }}
+  number: { { GIT_DESCRIBE_NUMBER } }
 
 requirements:
   build:
@@ -21,7 +21,6 @@ requirements:
     - numpy
     - scipy
     - pillow
-    - imageio
 
   run:
     - python
@@ -30,7 +29,6 @@ requirements:
     - matplotlib
     - pyqt >=5
     - pillow
-    - imageio
 
 about:
   home: https://github.com/awacha/tem_circlefind

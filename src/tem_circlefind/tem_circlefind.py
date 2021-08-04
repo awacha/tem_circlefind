@@ -3,7 +3,7 @@ import os
 import numpy as np
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.uic import loadUiType
-from imageio import imread
+import PIL.Image
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
 from matplotlib.figure import Figure
 from matplotlib.widgets import MultiCursor
@@ -162,8 +162,7 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
             self.inputLineEdit.setText(filename)
         self.filename = self.inputLineEdit.text()
         try:
-            self.data = imread(self.filename)
-            print(self.data.shape)
+            self.data = np.array(PIL.Image.open(self.filename))
             self.replotImage()
         except Exception as exc:
             mb = QtWidgets.QMessageBox(self)
@@ -254,7 +253,7 @@ class TEMCircleFind(QtWidgets.QWidget, Ui_TEMCircleFind):
             xcen = 0.5 * (points[0][0] + points[1][0]) * self.pixelsizeSpinBox.value()
             ycen = 0.5 * (points[0][1] + points[1][1]) * self.pixelsizeSpinBox.value()
             radius = self.pixelsizeSpinBox.value() * 0.5 * (
-                        (points[0][0] - points[1][0]) ** 2 + (points[0][1] - points[1][1]) ** 2) ** 0.5
+                    (points[0][0] - points[1][0]) ** 2 + (points[0][1] - points[1][1]) ** 2) ** 0.5
             for i in range(2):
                 try:
                     self._point_markers.pop(0).remove()
